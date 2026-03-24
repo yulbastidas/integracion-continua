@@ -25,7 +25,7 @@
                 // Hacemos una petición al endpoint que creamos en Node
                 const respuesta = await fetch('/api/status');
                 const datos = await respuesta.json();
-                document.getElementById('resultado').innerText = datos.mensaje + " a las " + datos.timestamp;
+                document.getElementById('resultado').innerText = datos.mensaje + " con " + datos.protocolo_interno + "interno y con " + datos.protocolo_externo + "externo";
             } catch (error) {
                 document.getElementById('resultado').innerText = "Error en la conexión";
             }
