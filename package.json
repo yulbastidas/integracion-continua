@@ -5,6 +5,8 @@
     "init": "^0.1.2",
     "jsonwebtoken": "^9.0.3",
     "qrcode": "^1.5.4",
-    "speakeasy": "^2.0.0"
+    "speakeasy": "^2.0.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1"
   }
 }

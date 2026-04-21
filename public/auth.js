@@ -20,7 +20,7 @@ async function configurar2FA() {
         const qrContainer = document.getElementById('qr-container');
         qrContainer.innerHTML = `<img src="${data.qrCode}" alt="QR Code" style="border: 5px solid white; border-radius: 10px;">`;
         
-        console.log("Secreto temporal:", temp2FASecret);
+        //console.log("Secreto temporal:", temp2FASecret);
     } catch (error) {
         console.error("Error al configurar 2FA:", error);
     }
