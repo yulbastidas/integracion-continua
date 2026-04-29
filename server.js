@@ -5,12 +5,14 @@ const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const bcrypt = require('bcryptjs');
 const { setupDB } = require('./database'); // Importamos la conexión
+const { json } = require('stream/consumers');
+const { error } = require('console');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const SECRET_KEY = "mi_clave_super_secreta_123"; 
+const SECRET_KEY = "mi_clave_super_secreta_123";
 
 let db;
 // Inicializar Base de Datos al arrancar
@@ -49,15 +51,16 @@ app.post('/api/register', async (req, res) => {
 // 2. Login validando contra SQLite
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
-    const user = await db.get('SELECT * FROM users WHERE username = ?', [username]);
+    //const user = await db.get('SELECT * FROM users WHERE username = ?', $[username]);
+    const user = await db.get('SELECT * FROM users WHERE username = ', $[username]);
 
     if (user && await bcrypt.compare(password, user.password_hash)) {
         const token = jwt.sign({ name: user.username }, SECRET_KEY, { expiresIn: '1h' });
-        return res.json({ 
-            token, 
+        return res.json({
+            token,
             has2FA: !!user.twofa_secret // Informamos si ya tiene 2FA configurado
         });
-    } 
+    }
     res.status(401).json({ error: "Credenciales incorrectas" });
 });
 
@@ -94,6 +97,26 @@ app.get('/api/status', (req, res) => {
         mensaje: "Servidor con SQLite y Persistencia",
         protocolo_externo: "HTTPS (TLS 1.3)"
     });
+});
+
+
+app.get('/api/user/:id', authenticateToken, async (req, res) => {
+    const userId = req.params.id;
+    try {
+        //uso de ? para evitar sql in jection  
+        // const user = await db.get('SELECT  FROM users WHERE id = ?', [userId]);
+        const user = await db.get(`SELECT * FROM users WHERE id = ${userId}`);
+        if (!user) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+        res.json(user);
+    } catch (eror) {
+        console.error(eror); // Ahora coincide con la variable del catch
+        res.status(500).json({
+            error: "Error en consultar la base de datos",
+            details: eror.message
+        });
+    }
 });
 
 app.get('/', (req, res) => {
